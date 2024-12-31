@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/mvc 
+  http://www.springframework.org/schema/mvc/spring-mvc.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/tx 
+  http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://68.178.170.166:3306/lsb?characterEncoding=utf8"/>
+		<property name="username" value="lsb_user" />
+		<property name="password" value="Secure99!" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.cultode.model.User</value>
+				<value>com.cultode.model.UserProfileImage</value>
+				<value>com.cultode.model.Post</value>
+				<value>com.cultode.model.JobPosts</value>
+				<value>com.cultode.model.JobApplications</value>
+				<value>com.cultode.model.Notice</value>
+				<value>com.cultode.model.BlogArticle</value>
+				<value>com.cultode.model.Contact</value>
+				<value>com.cultode.model.Event</value>
+				<value>com.cultode.model.Talent</value>
+				<value>com.cultode.model.Loan</value>
+				<value>com.cultode.model.PostComments</value>
+				<value>com.cultode.model.Admin</value>
+				<value>com.cultode.model.AdminProfileImage</value>
+				<value>com.cultode.model.Messages</value>
+				<value>com.cultode.model.Client</value>
+				<value>com.cultode.model.Token</value>
+				<value>com.cultode.model.Shortlist</value>
+				<value>com.cultode.model.Referral</value>
+				<value>com.cultode.model.CallBack</value>
+				<value>com.cultode.model.Tests</value>
+				<value>com.cultode.model.Accommodation</value>
+				<value>com.cultode.model.FlightTickets</value>
+				<value>com.cultode.model.University</value>
+				<value>com.cultode.model.Admission</value>
+				<value>com.cultode.model.Application</value>
+			</list>
+		</property>
+
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect
+				</prop>
+				<prop key="hibernate.connection.release_mode">after_transaction</prop>
+
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<context:annotation-config />
+	<mvc:annotation-driven />
+	<context:component-scan
+		base-package="com.cultode.constants" />
+	<context:component-scan
+		base-package="com.cultode.controller" />
+	<context:component-scan
+		base-package="com.tikaana.interceptor" />
+	<context:component-scan
+		base-package="com.cultode.exception" />
+	<context:component-scan
+		base-package="com.cultode.dao" />
+	<context:component-scan
+		base-package="com.cultode.service" />
+
+	<bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="465" />
+		<property name="username" value="info@exaltabroad.com" />
+		<property name="password" value="fvyj zmvz dvbn hdjv" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.mail.debug">true</prop>
+				<prop key="mail.smtp.localhost">localhost</prop>
+				<prop key="mail.smtp.starttls.required">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<mvc:resources mapping="/assets/**" location="/assets/" />
+	<mvc:resources mapping="/web-assets/**" location="/web-assets/" />
+	<mvc:resources mapping="/img/**" location="/img/" />
+	<mvc:resources mapping="/js/**" location="/js/" />
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/dist/**" location="/dist/" />
+	<mvc:resources mapping="/resources/**"
+		location="/resources/" />
+	<mvc:resources mapping="/uploaded_files/**"
+		location="/uploaded_files/" />
+
+	<mvc:interceptors>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/admin" />
+			<mvc:mapping path="/admin/*" />
+			<mvc:mapping path="/admin/*/*" />
+			<mvc:mapping path="/admin/*/*/*" />
+			<mvc:mapping path="/admin/*/*/*/*" />
+			<bean class="com.cultode.interceptor.AdminAuthenticationInterceptor"></bean>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/user" />
+			<mvc:mapping path="/user/*" />
+			<mvc:mapping path="/user/*/*" />
+			<mvc:mapping path="/user/*/*/*" />
+			<mvc:mapping path="/user/*/*/*/*" />
+			<bean class="com.cultode.interceptor.UserAuthenticationInterceptor"></bean>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/mobile/user" />
+			<mvc:mapping path="/mobile/user/*" />
+			<mvc:mapping path="/mobile/user/*/*" />
+			<mvc:mapping path="/mobile/user/*/*/*" />
+			<mvc:mapping path="/mobile/user/*/*/*/*" />
+			<bean class="com.cultode.interceptor.UserAuthenticationInterceptor"></bean>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/user/*" />
+			<mvc:mapping path="/user/*/*" />
+			<mvc:mapping path="/user/*/*/*" />
+			<bean id="webContentInterceptor"
+				class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+				<property name="cacheSeconds" value="0" />
+				<property name="useExpiresHeader" value="true" />
+				<property name="useCacheControlHeader" value="true" />
+				<property name="useCacheControlNoStore" value="true" />
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages">
+		</property>
+	</bean>
+</beans>
